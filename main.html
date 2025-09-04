@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PromptVault — Find, share, perfect.</title>
+  <meta name="description" content="Browse and share prompts for AI image generation." />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="main.css" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Keep this font link; CSS @import removed -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Skip link for accessibility -->
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ===== Modal (opens via #submit) ===== -->
+  <section id="submit" class="modal" aria-labelledby="submit-title">
+    <a href="#" class="modal__overlay" aria-hidden="true"></a>
+    <div role="dialog" class="modal__dialog" aria-modal="true" aria-labelledby="submit-title">
+      <header class="modal__header">
+        <h2 id="submit-title">Submit Your Prompt</h2>
+        <a href="#" class="modal__close" aria-label="Close">×</a>
+      </header>
+
+      <form class="modal__form" action="#thanks" method="post">
+        <label>
+          Prompt title
+          <input type="text" name="title" required>
+        </label>
+
+        <label>
+          Category
+          <select name="category" required>
+            <option value="">Choose one…</option>
+            <option>Portraits</option>
+            <option>Sci-Fi</option>
+            <option>Mockups</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label>
+          Your prompt
+          <textarea name="prompt" rows="6" required placeholder="Describe settings, style, camera, mood…"></textarea>
+        </label>
+
+        <label>
+          Your email (optional)
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+        </label>
+
+        <div class="modal__actions">
+          <a href="#" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Sign Up Modal (opens via #signup) ===== -->
+  <section id="signup" class="modal" aria-labelledby="signup-title">
+    <a href="#" class="modal__overlay" aria-hidden="true"></a>
+    <div role="dialog" class="modal__dialog" aria-modal="true" aria-labelledby="signup-title">
+      <header class="modal__header">
+        <h2 id="signup-title">Create your account or</h2>
+        <a href="#login" class="ghost-btn" aria-label="Log in modal">Log in</a>
+        <a href="#" class="modal__close" aria-label="Close">×</a>
+      </header>
+
+      <form class="modal__form" action="/signup" method="post" novalidate>
+
+        <label>
+          Username
+          <input type="text" name="nickname" autocomplete="nickname" required>
+        </label>
+
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" inputmode="email" required>
+        </label>
+
+        <label class="password-field">
+          Password
+          <div class="input-with-btn">
+            <input id="pw" type="password" name="password"
+                   minlength="8" autocomplete="new-password" required
+                   aria-describedby="pw-hint pw-strength">
+            <button type="button" class="ghost-btn" data-toggle="pw" aria-controls="pw" aria-label="Show password">Show</button>
+          </div>
+          <small id="pw-hint" class="input-hint">Use 8+ characters, with a mix of letters &amp; numbers.</small>
+          <div id="pw-strength" class="strength" aria-live="polite"></div>
+        </label>
+
+        <label>
+          Confirm password
+          <input id="pw2" type="password" name="password_confirm" autocomplete="new-password" required>
+        </label>
+
+        <div class="modal__actions">
+          <a href="#" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-primary">Create account</button>
+        </div>
+
+        <p class="form-error" hidden role="alert"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Log In Modal (opens via #login) ===== -->
+  <section id="login" class="modal" aria-labelledby="login-title">
+    <a href="#" class="modal__overlay" aria-hidden="true"></a>
+    <div role="dialog" class="modal__dialog" aria-modal="true" aria-labelledby="login-title">
+      <header class="modal__header">
+        <h2 id="login-title">Log in to your account</h2>
+        <a href="#" class="modal__close" aria-label="Close">×</a>
+      </header>
+
+      <form class="modal__form" action="/login" method="post" novalidate>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" inputmode="email" required>
+        </label>
+
+        <label class="password-field">
+          Password
+          <div class="input-with-btn">
+            <input id="login-pw" type="password" name="password" autocomplete="current-password" required>
+            <button type="button" class="ghost-btn" data-toggle="login-pw" aria-controls="login-pw" aria-label="Show password">Show</button>
+          </div>
+        </label>
+
+        <div class="modal__actions">
+          <a href="#" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-primary">Log in</button>
+        </div>
+
+        <p class="form-error" hidden role="alert"></p>
+      </form>
+    </div>
+  </section>
+
+  <div class="site">
+    <!-- ========== Header / Nav ========== -->
+    <header class="header" role="banner">
+      <div class="container">
+        <nav class="nav" aria-label="Primary">
+          <a class="brand" href="/" aria-label="PromptVault home">PromptVault</a>
+
+          <ul class="nav-links" role="list">
+            <li><a href="#home" aria-current="page">Home</a></li>
+            <li><a href="#collections">Collections</a></li>
+            <li><a href="#browse">Browse Prompts</a></li>
+          </ul>
+
+          <div class="auth">
+            <span class="auth-guest">
+              <a href="#login" class="ghost-btn" aria-label="Log in">Log in</a>
+              <a href="#signup" class="btn-signup" aria-label="Create an account">Sign Up</a>
+            </span>
+            <span class="auth-user" hidden>
+              <a href="#account" class="btn-signup" aria-label="My account" id="link-account">My Account</a>
+              <button type="button" class="ghost-btn" id="btn-logout" aria-label="Log out">Log out</button>
+            </span>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ========== Main ========== -->
+    <main id="main">
+
+      <!-- ========== Hero ========== -->
+      <section id="home" class="hero" data-header-scheme="dark" aria-labelledby="hero-title">
+        <div class="container">
+          <h1 id="hero-title" class="hero-title">Find, share, perfect.</h1>
+          <p class="hero-subtitle">Prompts for AI image generation.</p>
+
+          <div class="hero-actions">
+            <a href="#browse" class="btn-primary">Browse Prompts</a>
+            <a href="#submit" class="btn-primary">Submit Your Prompt</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Featured Collections ========== -->
+      <section id="collections" class="collections" data-header-scheme="dark" aria-labelledby="collections-title">
+        <div class="container">
+          <h2 id="collections-title">Featured Collections</h2>
+
+          <div class="tile-tray" role="region" aria-label="Featured collections" data-controls="below">
+            <ul class="tile-row" role="list">
+              <!-- Tile 1 -->
+              <li class="tile">
+                <div class="tile-link">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Featured Collections\20250829_1803_Young Professional Portrait_simple_compose_01k3v5m79beebsqekckxy4kxt7.png" alt="Realistic portrait photography prompts" loading="lazy" decoding="async" />
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Realistic Portraits</p>
+                      <h3>Explore lifelike photography prompts</h3>
+                    </figcaption>
+                  </figure>
+                </div>
+              </li>
+
+              <!-- Tile 2 -->
+              <li class="tile">
+                <div class="tile-link">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Featured Collections\20250829_1801_Futuristic Alien Terrain_simple_compose_01k3v5eww7eb7t7nqwtn9dcrya.png" alt="Cinematic sci-fi landscape prompts" loading="lazy" decoding="async" />
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Cinematic Sci-Fi</p>
+                      <h3>Dive into futuristic worlds and epic sci-fi landscapes.</h3>
+                    </figcaption>
+                  </figure>
+                </div>
+              </li>
+
+              <!-- Tile 3 -->
+              <li class="tile">
+                <div class="tile-link">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Featured Collections\20250829_1806_Minimal Mockup Render_simple_compose_01k3v5v1fvfnarhc8rxps4rqbg.png" alt="Minimal product mockup prompts" loading="lazy" decoding="async" />
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Minimal Mockups</p>
+                      <h3>Clean product renders &amp; minimalist mockups, perfect for creators</h3>
+                    </figcaption>
+                  </figure>
+                </div>
+              </li>
+
+              <!-- Tile 4 -->
+              <li class="tile">
+                <div class="tile-link">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Featured Collections\20250901_1326_Realistic Fantasy World_simple_compose_01k42cy2asfr79vh3xxsfhwma9.png" alt="Fantasy worlds prompt collection" loading="lazy" decoding="async" />
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Fantasy Worlds</p>
+                      <h3>Step into magical realms full of imagination and wonder</h3>
+                    </figcaption>
+                  </figure>
+                </div>
+              </li>
+
+              <!-- Tile 5 -->
+              <li class="tile">
+                <div class="tile-link">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Featured Collections\20250901_1331_Futuristic Flat Design_simple_compose_01k42d91wxf6jvxa9eh7kyg3by.png" alt="Architecture and interior prompts" loading="lazy" decoding="async" />
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Architecture &amp; Interiors</p>
+                      <h3>Explore modern buildings, interiors, and futuristic designs</h3>
+                    </figcaption>
+                  </figure>
+                </div>
+              </li>
+              <li>
+                <article class="prompt-card">
+                  <figure class="prompt-card__media">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250901_1925_Elegant Living Room_simple_compose_01k431gfb2egmafxehmxtzd71b.png" alt="Preview image for Elegant living room lighting" loading="lazy" decoding="async">
+                  </figure>
+                  <header class="prompt-card__header">
+                    <h3 class="prompt-title"><a href="#prompt-8">Elegant living room lighting</a></h3>
+                    <p class="prompt-meta">Interiors  by <a href="#u-mia">mia</a></p>
+                  </header>
+                  <p class="prompt-text">warm sunset, diffuse bounce, soft highlights, neutral palette</p>
+                </article>
+              </li>
+              <li>
+                <article class="prompt-card">
+                  <figure class="prompt-card__media">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Featured Collections\20250901_1326_Realistic Fantasy World_simple_compose_01k42cy2asfr79vh3xxsfhwma9.png" alt="Preview image for Realistic fantasy world vista" loading="lazy" decoding="async">
+                  </figure>
+                  <header class="prompt-card__header">
+                    <h3 class="prompt-title"><a href="#prompt-9">Realistic fantasy world vista</a></h3>
+                    <p class="prompt-meta">Landscapes  by <a href="#u-sam">sam</a></p>
+                  </header>
+                    <p class="prompt-text">epic scale, morning fog, god rays, detailed terrain</p>
+                </article>
+              </li>
+            </ul>
+
+            <div class="tray-controls below">
+              <button class="tray-btn prev" aria-label="Scroll left">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button class="tray-btn next" aria-label="Scroll right">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== My Account ========== -->
+      <section id="account" class="account" data-header-scheme="dark" aria-labelledby="account-title" hidden>
+        <div class="container">
+          <div class="account-header">
+            <h2 id="account-title">My Account</h2>
+            <button type="button" class="ghost-btn btn-logout" aria-label="Log out">Log out</button>
+          </div>
+
+          <div class="account-grid">
+            <div class="account-col">
+              <!-- Account details -->
+              <div class="account-card">
+                <div class="account-card__header">
+                  <h3>Account Details</h3>
+                  <span class="sub-info">
+                    <span class="sub-label">Subscription type</span>
+                    <span id="acc-sub-badge" class="badge">Free</span>
+                    <button type="button" id="acc-upgrade" class="btn-secondary acc-upgrade">Switch to Pro</button>
+                  </span>
+                </div>
+                <form id="account-form" class="account-form" novalidate>
+                  <p><strong>Username:</strong> <span id="acc-username-static">User</span></p>
+
+                  <div class="account-actions">
+                    <button type="button" id="acc-save" class="btn-primary">Edit</button>
+                  </div>
+                </form>
+
+                <div class="account-danger">
+                  <button type="button" id="acc-cancel" class="btn-danger">Cancel Subscription</button>
+                </div>
+              </div>
+
+              <!-- My prompts -->
+              <div class="account-card">
+                <div class="account-card__header">
+                  <h3>My Prompts</h3>
+                </div>
+                <!-- Quick add prompt -->
+                <form id="acc-add-form" class="account-form" novalidate hidden>
+                  <label>
+                    Title
+                    <input type="text" id="acc-new-title" placeholder="Prompt title" required>
+                  </label>
+                  <label>
+                    Category
+                    <select id="acc-new-category">
+                      <option value="Portraits">Portraits</option>
+                      <option value="Sci-Fi">Sci-Fi</option>
+                      <option value="Mockups">Mockups</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+                  <label>
+                    Prompt
+                    <textarea id="acc-new-text" rows="4" placeholder="Describe your prompt (max 300 chars)..." maxlength="300" required></textarea>
+                  </label>
+                  <div class="account-actions">
+                    <button type="button" id="acc-add" class="btn-primary">Add prompt</button>
+                  </div>
+                </form>
+                <ul id="my-prompts-list" class="prompt-list" role="list"></ul>
+                <p id="my-prompts-empty" class="muted">No prompts here yet.</p>
+                <div class="account-actions" id="acc-add-toggle-wrap">
+                  <button type="button" id="acc-add-toggle" class="btn-primary">Add prompt</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="account-col">
+              <!-- Saved prompts (right column) -->
+              <div class="account-card">
+                <div class="account-card__header">
+                  <h3>Saved Prompts</h3>
+                </div>
+                <ul id="saved-prompts-list" class="prompt-list" role="list"></ul>
+                <p id="saved-prompts-empty" class="muted">No saved prompts.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Tools / Modes ========== -->
+      <section class="modes" data-header-scheme="dark" aria-labelledby="modes-title">
+        <div class="container">
+          <h2 id="modes-title" class="sr-only">Creation Modes</h2>
+
+          <nav class="pill-nav" aria-label="Creation modes">
+            <ul role="list" class="pill-list">
+              <li><a href="#mode-studio" class="pill is-active" aria-current="page">Studio</a></li>
+              <li><a href="#mode-lab" class="pill">Lab</a></li>
+              <li><a href="#mode-lightning" class="pill">Lightning</a></li>
+            </ul>
+          </nav>
+
+          <!-- Panels -->
+          <div id="mode-studio" class="mode-panel">
+            <p class="mode-copy">Craft detailed prompts with fine-grained controls.</p>
+          </div>
+
+          <div id="mode-lab" class="mode-panel" hidden>
+            <p class="mode-copy">Experiment with variations and prompt mixing.</p>
+          </div>
+
+          <div id="mode-lightning" class="mode-panel" hidden>
+            <p class="mode-copy">Generate quick ideas with minimal input.</p>
+
+            <!-- Lightning Gallery -->
+            <div class="tile-tray" role="region" aria-label="Lightning Gallery">
+              <ul class="tile-row" role="list" id="lightning-gallery">
+                <li class="tile">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250901_1925_Elegant Living Room_simple_compose_01k431gfb2egmafxehmxtzd71b.png" alt="Soft lighting interior example" loading="lazy" decoding="async">
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Soft Lighting</p>
+                      <h3>Gentle tones with smooth, natural shadows</h3>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="tile">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250901_1927_Dramatic Living Room Lighting_simple_compose_01k431mra8f9hvjgf00z9n8zw6.png" alt="Dramatic lighting interior example" loading="lazy" decoding="async">
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Dramatic Lighting</p>
+                      <h3>Bold contrasts that bring depth and intensity</h3>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="tile">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250901_1929_Ambient Living Room_simple_compose_01k431rkhbevy8b65tdxahnz1n.png" alt="Ambient lighting interior example" loading="lazy" decoding="async">
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Ambient Lighting</p>
+                      <h3>Subtle glow that sets the mood of the scene</h3>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="tile">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250901_1932_Stylish Living Room_simple_compose_01k431x9k4e1gr405n8pb2yw4v.png" alt="Studio lighting interior example" loading="lazy" decoding="async">
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Studio Lighting</p>
+                      <h3>Perfectly balanced for polished, professional looks</h3>
+                    </figcaption>
+                  </figure>
+                </li>
+                <!-- Added: Tile 5 -->
+                <li class="tile">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250902_2000_Backlit Room Elegance_simple_compose_01k45nx1kxf9es4maywkvzwgva.png" loading="lazy" decoding="async">
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Backlit Lighting</p>
+                      <h3>Silhouettes and glow defining strong outlines</h3>
+                    </figcaption>
+                  </figure>
+                </li>
+                <!-- Added: Tile 6 -->
+                <li class="tile">
+                  <figure class="tile-figure">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Lightning\20250902_2002_Warm Cinematic Room Ambience_simple_compose_01k45p1xjxerksqkr9hrnmht6f.png" loading="lazy" decoding="async">
+                    <figcaption class="tile-cap">
+                      <p class="eyebrow">Golden Hour</p>
+                      <h3>Warm, cinematic tones with soft highlights</h3>
+                    </figcaption>
+                  </figure>
+                </li>
+              </ul>
+
+              <!-- Nav buttons -->
+              <div class="tray-controls below">
+                <button class="tray-btn prev" aria-label="Scroll left">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button class="tray-btn next" aria-label="Scroll right">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- (no stray extra </div> here anymore) -->
+        </div>
+      </section>
+
+      <!-- ========== Browse / Feed ========== -->
+      <section id="browse" class="browse" data-header-scheme="dark" aria-labelledby="browse-title">
+        <div class="container">
+          <div class="browse-header">
+            <h2 id="browse-title">Discover</h2>
+
+            <!-- Tabs removed: no center label/link -->
+
+            <!-- View switch: Preview Grid / Feed -->
+            <div class="layout" aria-label="Layout menu">
+              <button type="button" class="chip layout-trigger" id="layout-trigger"
+                      aria-haspopup="menu" aria-expanded="false" aria-controls="layout-menu"
+                      aria-label="Layout">
+                <svg class="icon-grid" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </button>
+              <div class="layout-popover" id="layout-menu" hidden>
+                <div class="view-switch view-menu" role="radiogroup" aria-label="Layout">
+                  <a href="#panel-feed" class="chip opt is-active" role="radio" aria-checked="true" aria-current="page">
+                    <span class="opt-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>
+                    </span>
+                    <span class="opt-label">Feed</span>
+                    <span class="opt-radio" aria-hidden="true"></span>
+                  </a>
+                  <a href="#panel-explorer" class="chip opt" role="radio" aria-checked="false">
+                    <span class="opt-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </span>
+                    <span class="opt-label">Preview Grid</span>
+                    <span class="opt-radio" aria-hidden="true"></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panels -->
+          <div id="panel-feed">
+            <ul class="prompt-feed" role="list">
+              <li>
+                <article class="prompt-card">
+                  <figure class="prompt-card__media">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Prompt Feed\20250902_2129_Golden-Hour Rooftop Portrait_simple_compose_01k45v07jgfzvssgsdxwhysx95.png" alt="Preview image for Golden-hour city rooftop portrait" loading="lazy" decoding="async">
+                  </figure>
+                  <header class="prompt-card__header">
+                    <h3 class="prompt-title"><a href="#prompt-1">Golden-hour city rooftop portrait</a></h3>
+                    <p class="prompt-meta">Portraits • by <a href="#u-alex">alex</a></p>
+                  </header>
+                  <p class="prompt-text">35mm, soft backlight, shallow depth, natural skin texture, subtle film grain</p>
+                </article>
+              </li>
+              <li>
+                <article class="prompt-card">
+                  <figure class="prompt-card__media">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Prompt Feed\20250902_2131_Monolithic Starship Over Ocean_simple_compose_01k45v4r60eymbqk8vbprxaxtb (1).png" alt="Preview image for Monolithic starship above stormy ocean" loading="lazy" decoding="async">
+                  </figure>
+                  <header class="prompt-card__header">
+                    <h3 class="prompt-title"><a href="#prompt-2">Monolithic starship above stormy ocean</a></h3>
+                    <p class="prompt-meta">Sci-Fi • by <a href="#u-jay">jay</a></p>
+                  </header>
+                  <p class="prompt-text">ultra-wide, dramatic clouds, volumetric light, cinematic composition</p>
+                </article>
+              </li>
+              <li>
+                <article class="prompt-card">
+                  <figure class="prompt-card__media">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Prompt Feed\20250903_1206_Cozy Coffee Shop Ambiance_simple_compose_01k47d6tfef4mv00pf9vc6zwn9.png" alt="Preview image for Cozy coffee shop interior" loading="lazy" decoding="async">
+                  </figure>
+                  <header class="prompt-card__header">
+                    <h3 class="prompt-title"><a href="#prompt-6">Cozy coffee shop interior</a></h3>
+                    <p class="prompt-meta">Other • by <a href="#u-emma">emma</a></p>
+                  </header>
+                  <p class="prompt-text">warm tones, window light, shallow depth, candid, 50mm</p>
+                </article>
+              </li>
+              <li>
+                <article class="prompt-card">
+                  <figure class="prompt-card__media">
+                    <img src="C:\Users\Matvey\Desktop\WebSite\Images\Prompt Feed\20250903_1209_Neon Haze Metropolis_simple_compose_01k47dbsepe23a2zhbk828gzhy.png" alt="Preview image for Futuristic city at dusk" loading="lazy" decoding="async">
+                  </figure>
+                  <header class="prompt-card__header">
+                    <h3 class="prompt-title"><a href="#prompt-7">Futuristic city at dusk</a></h3>
+                    <p class="prompt-meta">Sci-Fi • by <a href="#u-ken">ken</a></p>
+                  </header>
+                  <p class="prompt-text">neon reflections, long exposure, atmospheric haze, elevated viewpoint</p>
+                </article>
+              </li>
+            </ul>
+          </div>
+
+          <div id="panel-explorer" hidden>
+            <ul class="prompt-grid" role="list">
+              <li class="prompt-grid__item">
+                <a class="prompt-thumb" aria-label="Open prompt: Minimal product mockup">
+                  <img src="images/placeholder.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                  <span class="thumb-caption">Minimal product mockup</span>
+                </a>
+              </li>
+              <li class="prompt-grid__item">
+                <a class="prompt-thumb" aria-label="Open prompt: Neon cyber-alley">
+                  <img src="images/placeholder.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                  <span class="thumb-caption">Neon cyber-alley</span>
+                </a>
+              </li>
+              <li class="prompt-grid__item">
+                <a class="prompt-thumb" aria-label="Open prompt: Studio food shot">
+                  <img src="images/placeholder.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                  <span class="thumb-caption">Studio food shot</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== Submit CTA ========== -->
+      <section id="submit-cta" class="cta" data-header-scheme="light" aria-labelledby="cta-title">
+        <div class="container">
+          <h2 id="cta-title">Have a great prompt?</h2>
+          <p>Share it with the community.</p>
+          <a href="#submit" class="btn-primary">Submit Your Prompt</a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ========== Footer ========== -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container">
+        <p>&copy; <span id="year">2025</span> PromptVault. All rights reserved.</p>
+        <nav aria-label="Footer">
+          <ul role="list" class="footer-links">
+            <li><a href="#terms">Terms</a></li>
+            <li><a href="#privacy">Privacy</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Error toast -->
+  <div class="toast toast--error" id="form-toast" hidden role="alert" aria-live="assertive">
+    <strong>Form incomplete</strong>
+    <span class="toast__msg">Please review the highlighted fields.</span>
+    <button type="button" class="toast__action" data-toast-action="focus-errors">Review</button>
+    <button type="button" class="toast__close" aria-label="Dismiss">×</button>
+  </div>
+
+  <!-- Submit form error toast -->
+  <div class="toast toast--error" id="submit-toast" hidden role="alert" aria-live="assertive">
+    <strong>Submission incomplete</strong>
+    <span class="toast__msg">Please complete the required fields.</span>
+    <button type="button" class="toast__action" data-toast-action="focus-errors">Review</button>
+    <button type="button" class="toast__close" aria-label="Dismiss">?</button>
+  </div>
+
+  <script src="main.js" defer></script>
+  <noscript>
+    <style>
+      /* Ensure modals are reachable without JS if needed */
+      .modal{display:block; position:static; inset:auto; background:transparent;}
+      .modal__overlay{display:none}
+    </style>
+  </noscript>
+</body>
+</html>

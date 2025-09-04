@@ -1,0 +1,1406 @@
+:root{
+  --bg: #000000;        /* black background */
+  --text: #ffffff;      /* white text */
+  --muted: #bbbbbb;     /* lighter gray for secondary text */
+  --surface: #111111;   /* dark panels */
+  --surface-2: #1a1a1a; /* darker cards */
+  --border: #333333;    /* subtle gray borders */
+  --accent: #444444;    /* gray (for primary button) */
+  --accent-contrast: #ffffff;
+  --grad-1: #7dd3fc;  /* sky */
+  --grad-2: #a78bfa;  /* violet */
+  --grad-3: #f472b6;  /* pink */
+  --header-h: 56px;
+
+  /* Type scale */
+  --font-sans: 'Inter', ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol";
+  --fs-hero: clamp(2.2rem, 6vw, 4rem);
+  --fs-h2: clamp(1.25rem, 2.5vw, 1.75rem);
+  --fs-h3: clamp(1.05rem, 2vw, 1.25rem);
+  --fs-body: 1rem;
+  --lh-tight: 1.15;
+  --lh-body: 1.6;
+
+  /* Spacing */
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 3rem;
+  --radius-1: .5rem;
+  --radius-2: .75rem;
+  --radius-round: 999px;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-2: 0 8px 24px rgba(15,23,42,.08);
+}
+
+main{ padding-top: var(--header-h); }
+
+/* ============ Base ============ */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--font-sans);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.92}
+.container{
+  width:min(1120px, 92vw);
+  margin-inline:auto;
+}
+
+/* A11y helpers */
+.sr-only{
+  position:absolute!important;
+  width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.skip-link{
+  position:absolute;left:-9999px;top:auto;
+}
+.skip-link:focus{
+  left:var(--space-4);top:var(--space-4);
+  background:#ffffff;            /* white chip */
+  color:#000000;                 /* black text for contrast */
+  padding:var(--space-3) var(--space-4);
+  border-radius:var(--radius-1);
+  box-shadow: 0 0 0 2px var(--border);
+}
+
+/* ===== Sign Up niceties ===== */
+.input-row{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.password-field { margin-top: var(--space-4); }
+
+.input-with-btn{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+.input-with-btn input{ width: 100%; }
+.ghost-btn{
+  padding: .6rem .8rem;
+  border-radius: var(--radius-round);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.ghost-btn:hover{ background: #222; }
+
+.input-hint{
+  display:block;
+  color: var(--muted);
+  margin-top: .4rem;
+}
+.strength{
+  margin-top: .4rem;
+  font-weight: 600;
+}
+
+.form-error{
+  color: #ff6b6b;
+  margin-top: var(--space-4);
+}
+
+/* ============ Header / Nav ============ */
+header.header{
+  position: sticky;
+  top: 0;
+  /* Keep header above page content but below modals (10000) and toasts (99999) */
+  z-index: 9999;
+  /* Create its own stacking context to avoid being under transformed content */
+  isolation: isolate;
+  /* Explicitly accept clicks even if blurred/transparent */
+  pointer-events: auto;
+  background: transparent;
+  transition: background-color .25s ease, color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
+}
+header.header[data-scheme="dark"] { color: #fff; }
+header.header[data-scheme="light"] { color: #000; }
+
+header.header[data-scheme="dark"],
+header.header[data-scheme="light"] {
+  background: rgba(255,255,255,0.0); /* start transparent */
+  backdrop-filter: none;
+}
+
+header.header[data-scheme="dark"] .brand,
+header.header[data-scheme="dark"] a { color: #fff; }
+
+/* Frosted panel state when scrolling */
+header.header[data-scheme="dark"].with-panel {
+  background: rgba(0,0,0,.45); /* restore frosted transparency */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0,0,0,.10);
+}
+header.header[data-scheme="light"].with-panel {
+  background: rgba(255,255,255,.8); /* restore frosted transparency */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+/* Ensure page content never blocks header clicks when scrolled under it */
+[data-header-scheme] { position: relative; z-index: 0; }
+.account-card, .prompt-card { position: relative; z-index: 0; }
+
+
+.nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+}
+header.header[data-scheme="light"] .nav-links a,
+header.header[data-scheme="light"] .auth a { color:#111; }
+header.header[data-scheme="dark"] .nav-links a,
+header.header[data-scheme="dark"] .auth a { color:#ddd; }
+
+header.header[data-scheme="light"] .nav-links a[aria-current="page"] { color:#000; font-weight:600; }
+header.header[data-scheme="dark"]  .nav-links a[aria-current="page"] { color:#fff; font-weight:600; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.brand{ font-weight:800;letter-spacing:.2px; }
+.nav-links, .auth{ display:flex;align-items:center;gap:var(--space-6); }
+.nav-links a, .auth a{ color:var(--muted); }
+.nav-links a[aria-current="page"]{ color:var(--text); font-weight:600; }
+
+.auth .btn-signup{
+  display: inline-block;
+  padding: 0.6em 1.2em;
+  background-color: #222;
+  color: #fff;
+  font-weight: 600;
+  border-radius: var(--radius-round);
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+}
+.btn-signup:hover,
+.btn-signup:focus {
+  background-color: #222;
+}
+
+/* ============ Buttons / Chips / Pills / Tabs ============ */
+.btn-primary, .btn-secondary, .btn-danger{
+  display:inline-block;font-weight:700;border-radius:var(--radius-round);
+  padding:.9rem 1.15rem;border:1px solid transparent;
+  font-size: 15px;
+  cursor: pointer;
+}
+.btn-primary {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+}
+.btn-primary:hover { background: #222222; }
+.btn-secondary {
+  background: #444444;
+  color: #ffffff;
+  border: 1px solid #444444;
+}
+.btn-secondary:hover { background: #555555; }
+
+.pill-list{display:flex;gap:var(--space-3);padding:0;margin:0;list-style:none}
+.pill{
+  display:inline-block;
+  padding:.55rem .9rem;
+  border: 1px solid var(--border);
+  border-radius:var(--radius-round);
+  color:#000000;
+  background:#ffffff;
+}
+.pill.is-active{
+  color: #ffffff;
+  border-color: #000000;
+  font-weight:600;
+  background: #000000;
+}
+
+.chip{
+  display:inline-block;
+  padding:.45rem .8rem;
+  border-radius:var(--radius-round);
+  border:1px solid var(--border);
+  background:#ffffff;
+  color:#000000; 
+}
+.chip.is-active{
+  background:#000000;
+  color:#ffffff;
+  border-color:#000000;
+  font-weight:600; 
+}
+.tab-list{display:flex;gap:var(--space-3);padding:0;margin:0;list-style:none}
+.tab{
+  display:inline-block;
+  padding:.6rem .95rem;
+  border-radius:var(--radius-round);
+  border:1px solid var(--border);
+  color:#000000;
+  background:#ffffff;
+}
+.tab.is-active{
+  background:#000000;
+  color:#ffffff;
+  border-color:#000000;
+  font-weight:600;
+}
+
+/* ============ Hero ============ */
+.hero{
+  padding:clamp(3rem, 6vw, 6rem) 0 var(--space-8);
+  text-align:center;
+}
+.hero h1{
+  font-size:var(--fs-hero);
+  line-height:var(--lh-tight);
+  margin:0 0 var(--space-3);
+  letter-spacing:-.02em;
+}
+.hero-subtitle{
+  color:var(--muted);
+  margin:0 0 var(--space-6);
+  font-size: clamp(1.1rem, 2.8vw, 1.5rem);
+}
+.hero-actions{display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap}
+
+/* ============ Featured Collections ============ */
+.collections{ padding: calc(var(--space-8) * 1.6) 0; }
+.collections h2{font-size:var(--fs-h2);margin:0 0 var(--space-6)}
+.card-link:hover::after,
+.card-link{ display:block; color:inherit; }
+.card-link:focus::after { opacity: 1; }
+
+.tile-tray { position: relative; }
+.tile-row{
+  /* Allow natural horizontal scrolling; hide scrollbars visually */
+  touch-action: auto;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(420px, 82vw);
+  gap: clamp(1rem, 3vw, 2rem);
+  overflow-x: auto;
+  height: var(--tile-row-h, clamp(420px, 62vh, 720px));
+  padding: var(--space-4) 0;
+  margin: 0;
+  list-style: none;
+  /* Disable snap to avoid sticky feel when vertically scrolling over tiles */
+  scroll-snap-type: none;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Use instant wheel/trackpad scrolling for responsiveness */
+  scroll-behavior: auto;
+}
+/* Hide webkit scrollbars while keeping scrolling enabled */
+.tile-row::-webkit-scrollbar { display: none; }
+
+/* Ensure tiles and figures fill the row height */
+.tile { height: 100%; }
+.tile-link { display: block; height: 100%; }
+.tile-row .tile-figure { height: 100%; aspect-ratio: auto; }
+.tile-row .tile-figure img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Global smooth scrolling for anchors, keyboard and wheel continuity */
+html{ scroll-behavior: smooth; scroll-padding-top: var(--header-h); }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+}
+
+/* On touch devices, ensure vertical panning still scrolls the page */
+@media (pointer: coarse) {
+  .tile-row { touch-action: pan-y; }
+}
+.tray-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: .5rem;
+}
+.tray-controls.below {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+  position: static;         
+}
+.tray-btn {
+  position: static;
+  transform: none;
+  width: 40px; height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.9);
+  color: #000;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.12);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.tray-btn svg { width: 18px; height: 18px; pointer-events: none; }
+.tile-row::-webkit-scrollbar { display: none; }
+.tray-btn:hover { background: #fff; }
+
+/* Disabled nav button style */
+.tray-btn:disabled,
+.tray-btn[aria-disabled="true"],
+.tray-btn.is-disabled {
+  background: #333;
+  color: #fff;
+  opacity: 1;
+  cursor: default;
+  box-shadow: none;
+  border: none;
+}
+.tray-btn:not(:disabled) {
+  background: #fff;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 6px 14px rgba(0,0,0,.25);
+}
+.tray-btn.prev { left: .5rem; }
+.tray-btn.next { right: .5rem; }
+.tile { scroll-snap-align: start; }
+
+.tile-link { display: block; }
+
+.tile-figure {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  transform: translateZ(0);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.tile-figure img { pointer-events: none; }
+@media (pointer: coarse) {
+  /* Ensure finger swipes over the card scroll the page vertically */
+  .tile-figure, .tile-link { touch-action: pan-y; }
+}
+.tile-figure:hover {
+  transform: translateY(-4px);
+}
+.tile-figure img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Soft vignette for captions */
+.tile-figure::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,0) 26%, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%);
+  pointer-events: none;
+}
+
+/* Caption */
+.tile-cap {
+  position: absolute;
+  top: 20px; left: 22px; right: 22px;
+  color: #fff;
+}
+.tile-cap .eyebrow { margin: 0 0 .25rem; font-size: .9rem; opacity: .9; }
+.tile-cap h3 {
+  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  margin: 0; /* bring title closer to eyebrow */
+  line-height: 1.1; /* tighter line spacing for multi-line titles */
+}
+
+/* Little plus badge (kept if you decide to add) */
+.tile-plus {
+  position: absolute;
+  right: 14px; bottom: 14px;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,.92);
+  color: #000; font-weight: 700;
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+}
+
+/* Entrance animation */
+.tile { opacity: 0; transform: translateY(40px); transition: opacity .6s ease, transform .6s ease; transition-delay: var(--delay, 0s); }
+.tile.is-visible { opacity: 1; transform: translateY(0); }
+
+.card-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-7);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.card{
+  transform-origin: center;
+  border-radius: var(--radius-2);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.card.animate-in { opacity: 1; transform: translateY(0); }
+.card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-2); }
+.card-figure{display:grid}
+.card-figure img{ aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface-2); }
+.card-caption{ padding: calc(var(--space-6) + .75rem); }
+.card-caption h3{ font-size: 1.35rem; }
+.card-caption p{ color:var(--muted); margin:0 }
+
+/* ============ Modes (Studio / Lab / Lightning) ============ */
+.modes{padding:var(--space-8) 0;background:var(--surface)}
+.mode-panel{margin-top:var(--space-5)}
+.mode-copy{color:var(--muted);margin:0}
+
+/* Lightning gallery overrides */
+#mode-lightning .tile-row {
+  /* Make Lightning gallery show full 3 cards without clipping */
+  --tile-gap: 1.25rem;
+  height: var(--lightning-h, clamp(420px, 60vh, 700px));
+  /* Exactly fit three cards within the container when space allows,
+     while staying responsive on smaller viewports. */
+  grid-auto-columns: clamp(260px, calc((100% - 2 * var(--tile-gap)) / 3), 360px);
+  gap: var(--tile-gap);
+  padding: var(--space-4) 0;
+  align-items: stretch;
+}
+
+/* Prevent vertical scrolling inside the Lightning gallery; let page handle it */
+#lightning-gallery { overflow-y: hidden; }
+@media (pointer: coarse) {
+  /* On touch devices, allow only horizontal swipes within the gallery */
+  #lightning-gallery { touch-action: pan-x; }
+}
+
+#mode-lightning .tile-figure {
+  /* Fill the row height and avoid extra cropping */
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+
+#mode-lightning .tile-figure img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure wrappers also stretch to full row height */
+#mode-lightning .tile,
+#mode-lightning .tile-link { height: 100%; }
+
+#mode-lightning .tile-cap {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  color: #fff;
+}
+
+#mode-lightning .tile-cap h3 {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.1; /* tighter lines to match other tiles */
+}
+#mode-lightning .tile-tray {
+  margin-top: var(--space-6);
+}
+
+/* Featured Collections overrides (match Lightning behavior) */
+[aria-label="Featured collections"] .tile-row {
+  /* Fit exactly three cards without clipping, remain responsive */
+  --tile-gap: 1.25rem;
+  height: var(--collections-h, clamp(420px, 60vh, 700px));
+  grid-auto-columns: clamp(260px, calc((100% - 2 * var(--tile-gap)) / 3), 360px);
+  gap: var(--tile-gap);
+  padding: var(--space-4) 0;
+  align-items: stretch;
+  overflow-y: hidden;
+}
+[aria-label="Featured collections"] .tile,
+[aria-label="Featured collections"] .tile-link { height: 100%; }
+[aria-label="Featured collections"] .tile-figure {
+  height: 100%;
+  aspect-ratio: auto;
+}
+[aria-label="Featured collections"] .tile-figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (pointer: coarse) {
+  /* Allow only horizontal swipes within the Featured gallery; page keeps vertical */
+  [aria-label="Featured collections"] .tile-row { touch-action: pan-x; }
+}
+
+/* ============ Discover / Browse ============ */
+.browse{padding:var(--space-8) 0}
+.browse-header{
+  display:grid; grid-template-columns: 1fr auto; align-items:center; gap:var(--space-4);
+  margin-bottom:var(--space-6);
+}
+/* center nav removed; keep layout button right-aligned */
+.browse-header .layout{ justify-self: end; }
+#browse-title{font-size:var(--fs-h2);margin:0}
+
+/* ============ Account ============ */
+.account{ padding: var(--space-8) 0; }
+.account h2{ font-size: var(--fs-h2); margin: 0 0 var(--space-4); }
+.account p{ color: var(--muted); }
+.account-header{ display:flex; align-items:center; justify-content:flex-start; gap: var(--space-5); margin: 0 0 var(--space-4); }
+.account-header h2{ margin: 0; line-height: 1.1; }
+.card-like{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-6);
+}
+
+/* Account layout */
+.account-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  /* Prevent cards from stretching to equal height */
+  align-items: start;
+  /* Fill earlier gaps so the third card (My Prompts)
+     tucks under Account Details even if Saved Prompts grows */
+  grid-auto-flow: dense;
+}
+.account-col{ display:flex; flex-direction:column; gap: var(--space-6); min-width: 0; }
+.account-grid button{ cursor: pointer; }
+.account-card{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-6);
+}
+.account-card h3{ margin: 0 0 var(--space-3); font-size: var(--fs-h3); }
+.account-card__header{ display:flex; align-items:center; justify-content:space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.account-card__header .sub-info{ display:flex; align-items:center; gap: .5rem; transform: translateY(-6px); }
+.account-card__header .sub-label{ color: var(--muted); font-size: .9rem; }
+.account-card__header .sub-info .btn-secondary{ padding: .35rem .7rem; font-weight: 600; }
+.acc-upgrade{
+  position: relative;
+  z-index: 0;
+  isolation: isolate; /* keep ::before behind content */
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  background: transparent; /* keep text fully opaque; background via ::before */
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+.acc-upgrade::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--grad-1), var(--grad-2), var(--grad-3));
+  background-size: 200% 200%;
+  animation: accGradient 6s ease infinite;
+  transition: background-position .4s ease, opacity .2s ease;
+  opacity: 1;
+  z-index: -1;
+}
+.acc-upgrade:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+}
+.acc-upgrade:hover::before{ background-position: 100% 50%; opacity: .9; }
+.acc-upgrade:focus{ outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 8px 22px rgba(124, 58, 237, 0.5); }
+.acc-upgrade.pulse{ animation: pulse .8s ease; }
+
+@keyframes accGradient{
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+@keyframes pulse{
+  0% { transform: scale(1); box-shadow: 0 6px 18px rgba(124,58,237,.35); }
+  50%{ transform: scale(1.05); box-shadow: 0 12px 28px rgba(124,58,237,.55); }
+  100%{ transform: scale(1); box-shadow: 0 6px 18px rgba(124,58,237,.35); }
+}
+.account-form label{ display:block; font-weight:600; margin-bottom: var(--space-4); }
+.account-form input, .account-form select{
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: .75rem .9rem;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+.account-form textarea{
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: .75rem .9rem;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  resize: vertical;
+}
+/* Lock My Prompts textarea height (no manual/autogrow) */
+#acc-new-text{
+  resize: none;         /* prevent manual drag */
+  overflow-y: hidden;   /* let JS grow height; enable scroll only past cap */
+}
+.account-actions{ display:flex; justify-content:flex-end; }
+/* Ensure consistent bottom spacing for action rows in account cards */
+.account-card .account-form .account-actions{ margin-bottom: var(--space-6); }
+#acc-add-toggle-wrap{ margin-top: var(--space-4); margin-bottom: var(--space-6); }
+
+/* Danger area in Account Details */
+.account-danger{ margin-top: var(--space-6); display:flex; justify-content:flex-start; }
+.btn-danger{
+  background: #000000;       /* match Save changes */
+  color: #ffffff;
+  border: 1px solid #000000; /* match Save changes */
+}
+.btn-danger:hover{ background: #222222; }
+/* Spacing for My Prompts add-toggle */
+#acc-add-toggle-wrap{ margin-top: var(--space-4); margin-bottom: var(--space-6); }
+.badge{
+  display:inline-block;
+  padding: .3rem .6rem;
+  border-radius: var(--radius-round);
+  border: 1px solid var(--border);
+  font-size: .85rem;
+  color: var(--text);
+  background: #1e1e1e;
+}
+.badge.is-pro{
+  color: #fff;
+  border-color: rgba(255,255,255,0.15);
+  background: linear-gradient(90deg, var(--grad-1), var(--grad-2), var(--grad-3));
+  background-size: 200% 200%;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+  animation: accGradient 6s ease infinite;
+}
+.prompt-list{ list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+#my-prompts-list{ margin-bottom: var(--space-4); }
+.prompt-list li{
+  padding: .9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  background: var(--surface-2);
+}
+.prompt-list .prompt-title{ font-weight: 600; margin: 0 0 .25rem; }
+.prompt-list .prompt-meta{ color: var(--muted); font-size: .9rem; margin: 0; }
+.prompt-list .prompt-text{
+  margin:.5rem 0 0;
+  color:#dddddd;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: .95rem;
+  line-height: 1.45;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: .6rem .75rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.prompt-list .prompt-actions{ display:flex; justify-content:flex-end; margin-top: .5rem; gap: .5rem; }
+.prompt-list .prompt-del{ border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: var(--radius-round); padding: .35rem .7rem; cursor: pointer; }
+.prompt-list .prompt-del:hover{ background: #222; }
+/* Edit button styled like Delete */
+.prompt-list .prompt-edit{ border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: var(--radius-round); padding: .35rem .7rem; cursor: pointer; }
+.prompt-list .prompt-edit:hover{ background: #222; }
+/* Toggle button styled like Delete */
+.prompt-list .prompt-toggle{ border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: var(--radius-round); padding: .35rem .7rem; cursor: pointer; }
+.prompt-list .prompt-toggle:hover{ background: #222; }
+.muted{ color: var(--muted); }
+
+/* Saved list: let the inner prompt-card own the visuals */
+#saved-prompts-list > li{
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-2);
+}
+#saved-prompts-list > li + li{ margin-top: var(--space-3); }
+/* Ensure nested prompt-cards don’t visually escape the account card */
+.account-card #saved-prompts-list .prompt-card{ box-shadow: none; max-width: 100%; border: none; }
+@media (min-width: 720px){
+  /* Use container-relative sizing for saved cards so they don't overflow */
+  .account-card #saved-prompts-list .prompt-card{
+    /* Slightly larger image column */
+    grid-template-columns: clamp(160px, 40%, 240px) 1fr;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Keep saved prompt image size stable when toggling text */
+@media (min-width: 720px){
+  .account-card #saved-prompts-list .prompt-card .prompt-card__media{
+    align-self: start;       /* prevent stretching with growing text */
+    aspect-ratio: 4 / 3;     /* fixed visual ratio based on column width */
+    height: auto;            /* override base height:100% */
+  }
+  .account-card #saved-prompts-list .prompt-card .prompt-card__media img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;       /* fill the fixed-ratio box without distortion */
+  }
+}
+
+/* Saved Prompts: respect natural aspect ratios (no cropping) */
+@media (min-width: 720px){
+  .account-card #saved-prompts-list .prompt-card .prompt-card__media{
+    aspect-ratio: auto;   /* remove fixed 4:3 for varied images */
+    height: auto;         /* let height follow image */
+  }
+  .account-card #saved-prompts-list .prompt-card .prompt-card__media img{
+    width: 100%;
+    height: auto;         /* keep proportions for tall/portrait images */
+    object-fit: contain;  /* avoid cropping different aspect ratios */
+  }
+}
+
+/* Saved prompts thumbnail (optional) */
+.saved-thumb{
+  /* Compact panel that hugs the image instead of stretching full width */
+  display: inline-block;
+  margin: .5rem 0 0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: .35rem;
+  max-width: 100%;
+}
+.saved-thumb img{
+  display: block;
+  width: auto;               /* keep natural aspect ratio */
+  height: auto;              /* show full image without cropping */
+  max-width: min(100%, 560px);
+  max-height: clamp(120px, 20vw, 220px); /* compact but readable */
+  object-fit: contain;       /* never crop */
+  border-radius: calc(var(--radius-1) - 4px);
+}
+
+@media (max-width: 960px){
+  .account-grid{ grid-template-columns: 1fr; }
+}
+
+.view-switch{display:flex;gap:var(--space-2)}
+
+/* Option-style menu for view switch */
+.view-menu{
+  display:grid; gap:.25rem; align-items:start;
+  background: transparent; /* no inner background */
+  color:#000000;
+  border: 0;
+  border-radius: 0;
+  padding:.25rem 0;
+  font-size: .8rem; /* smaller text */
+}
+.layout{ position: relative; display:inline-flex; align-items:center; }
+.layout-trigger{ cursor: pointer; display:inline-grid; place-items:center; padding:.45rem .55rem; }
+.layout-trigger .fa-solid{ font-size:16px; line-height:1; }
+.layout-trigger .icon-grid{ display:block; }
+.layout-popover{ position:absolute; top: 50%; right: 100%; transform: translateY(-50%); z-index: 20; }
+.layout-popover[hidden]{ display:none; }
+.layout-popover .menu-title{
+  font-size: .8rem; color: #666; margin: 0 0 .35rem; padding: .25rem .1rem; font-weight: 600;
+}
+.layout-popover .view-menu{
+  background: transparent; /* keep only outer box background */
+  border: 0; box-shadow: none; border-radius: 0; padding: 0;
+  min-width: 240px;
+  width: max-content;
+  font-size: .8rem; /* smaller text */
+  display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; gap: 1rem;
+}
+
+/* When open, turn the whole .layout wrapper into a single box
+   that contains the trigger and the options together */
+.layout.is-open{
+  /* Smooth, slightly longer transition when opening */
+  transition: background .20s cubic-bezier(.2,.7,.3,1),
+              box-shadow .20s cubic-bezier(.2,.7,.3,1),
+              padding .20s cubic-bezier(.2,.7,.3,1),
+              gap .20s cubic-bezier(.2,.7,.3,1);
+  position: relative;
+  display: inline-flex;
+  flex-direction: row-reverse; /* place popover to the left of trigger */
+  align-items: center;
+  gap: .5rem;
+  padding: 0 6px; /* keep same height as trigger */
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255,255,255,.60);
+  backdrop-filter: blur(2px) saturate(140%);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+  /* Add subtle white ring + glow so it stands out on dark backgrounds */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.35),
+    0 10px 30px rgba(255,255,255,.12),
+    0 14px 28px rgba(0,0,0,.28),
+    0 6px 12px rgba(0,0,0,.18);
+  z-index: 5;
+}
+.layout.is-open .layout-popover{
+  position: static; /* join flow so background wraps both */
+  right: auto; top: auto; transform: none;
+  z-index: 1; padding: 0; margin: 0;
+  /* Slide/ fade the options in from the trigger side */
+  animation: layoutSlideIn 280ms cubic-bezier(.2,.7,.3,1) both;
+  transform-origin: right center;
+  will-change: transform, opacity;
+}
+.layout.is-open .layout-popover .view-menu{
+  background: transparent; border: 0; box-shadow: none; padding: .1rem 0;
+  min-width: 220px; width: max-content; position: relative; z-index: 1;
+  display:flex; align-items:center; flex-wrap: nowrap; white-space: nowrap; gap: 1rem;
+}
+.layout.is-open .layout-trigger{
+  background: transparent; color: inherit; border: 1px solid transparent; box-shadow: none; /* preserve size */
+  padding: .45rem .55rem; position: relative; z-index: 1;
+}
+
+/* Keyframes for opening the layout popover from right to left */
+@keyframes layoutSlideIn{
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce){
+  .layout{ transition: none !important; }
+  .layout.is-open .layout-popover{ animation: none !important; }
+}
+
+/* Unified background behind icon + menu without affecting layout */
+.layout.is-open .layout-popover::before{ content: none; }
+.view-menu.is-collapsed .opt:not(.is-active){ display:none; }
+.view-menu.is-collapsed{ padding:.25rem .65rem; }
+.view-menu .opt{
+  display:grid; grid-template-columns: 1.25rem auto min-content; align-items:center; justify-content:center;
+  gap:.25rem; padding:.35rem .45rem; text-decoration:none; cursor:pointer; 
+  border:0; background:transparent; border-radius:8px; color:#000000;
+  position: relative;
+}
+.view-menu .opt .opt-icon{ margin-right: .25rem; }
+.view-menu .opt .opt-label{ white-space:nowrap; }
+.view-menu .opt.is-active{ font-weight: normal; }
+.view-menu .opt .opt-icon svg{ display:block; }
+.view-menu .opt .opt-radio{
+  width: 0.8rem; height: 0.8rem; border-radius:100%; justify-self:end;
+  position:relative; background:transparent; border:1px solid currentColor;
+  transition: background .50s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.view-menu .opt.is-active .opt-radio{ background:transparent; border-color:#000000c7; box-shadow:none; }
+/* Small inner dot when active */
+.view-menu .opt .opt-radio::after{
+  content:""; position:absolute; inset:4px; border-radius:inherit; background:#ffffff;
+  transform: scale(0); transition: transform .15s ease;
+}
+.view-menu .opt.is-active .opt-radio::after{ transform: scale(1.8); }
+
+/* Remove hover effects for Feed/Explorer buttons */
+.view-menu .opt[href="#panel-feed"]:hover,
+.view-menu .opt[href="#panel-explorer"]:hover{ background: transparent; }
+
+a[href="#panel-feed"]:hover,
+a[href="#panel-explorer"]:hover{ opacity: 1; }
+.prompt-feed{ padding:0;margin:0;list-style:none;display:grid;gap:var(--space-4); }
+/* Slightly larger spacing for feed cards */
+#panel-feed .prompt-feed{ gap: calc(var(--space-4) * 1.25); }
+/* Show two cards side-by-side on larger screens *5
+@media (min-width: 980px){
+  .prompt-feed{ grid-template-columns: repeat(2, 1fr); }
+}
+.prompt-card{
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-2);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-1);
+  color: #ffffff;     
+}
+/* Preview image inside prompt cards */
+.prompt-card__media{
+  margin: 0 0 var(--space-4);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+.prompt-card__media img{
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+.prompt-card__header{
+  display:block;
+  margin-bottom: var(--space-2);
+}
+
+/* Compact horizontal card layout on larger screens */
+@media (min-width: 720px){
+  .prompt-card{
+    display: grid;
+    /* Make the image column wider while staying responsive */
+    grid-template-columns: clamp(180px, 22vw, 260px) 1fr;
+    grid-template-rows: auto auto auto;
+    /* Actions align with prompt-text in the right column */
+    grid-template-areas:
+      "media head"
+      "media text"
+      "media act";
+    column-gap: var(--space-4);
+    row-gap: var(--space-2);
+    align-items: stretch;
+  }
+  .prompt-card__media{ grid-area: media; margin: 0; height: 100%; }
+  .prompt-card__media img{ aspect-ratio: auto; height: 100%; width: 100%; object-fit: cover; }
+  .prompt-card__header{ grid-area: head; margin-bottom: 0; }
+  /* Do not stretch the prompt text bubble; keep its natural height */
+  .prompt-card .prompt-text{ grid-area: text; margin: 0; align-self: start; }
+.prompt-card__actions{ grid-area: act; justify-self: start; margin-top: var(--space-3); }
+}
+
+/* Saved Prompts: add a dedicated row under meta for the toggle */
+@media (min-width: 720px){
+  .account-card #saved-prompts-list .prompt-card{
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "media head"
+      "media toggle"
+      "media text"
+      "media act";
+  }
+  .account-card #saved-prompts-list .prompt-card .prompt-card__toggle{ grid-area: toggle; }
+  /* Also keep saved card prompt text at natural height */
+  .account-card #saved-prompts-list .prompt-card .prompt-text{ align-self: start; }
+}
+
+/* Smaller Add prompt button and right alignment helper */
+.btn-secondary.prompt-add{
+  padding: .4rem .7rem;
+  font-size: .85rem;
+  border-radius: var(--radius-round);
+  line-height: 1;
+}
+/* Extra specificity to ensure compact size wins over base button rules */
+.prompt-card .prompt-card__actions .btn-secondary.prompt-add{
+  /* Force a consistent compact size regardless of context */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px !important;
+  min-width: 110px !important;
+  padding: 0 12px !important;
+  font-size: .85rem !important;
+  line-height: 1 !important;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Match Remove with the Saved pill in prompt-card actions */
+.prompt-card__actions .prompt-del{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 110px;
+  padding: 0 12px;
+  font-size: .85rem;
+  line-height: 1;
+  border-radius: var(--radius-round);
+  background: #444444;
+  color: #ffffff;
+  border: 1px solid #444444;
+  cursor: pointer;
+}
+.prompt-card__actions .prompt-del:hover{ background: #555555; }
+.prompt-card__actions .prompt-like{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  /* Small by default when there are no likes */
+  min-width: 38px;
+  padding: 0 8px;
+  font-size: 1rem; /* make icon crisp */
+  line-height: 1;
+  border-radius: var(--radius-round);
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  gap: 0; /* no internal gap until a count exists */
+}
+.prompt-like .icon-heart{ width: 16px; height: 16px; display: block; }
+.prompt-like .like-count{
+  font-size: .95rem;
+  line-height: 1;
+  margin-left: 0; /* no offset when hidden */
+  min-width: 0; /* no reserve until visible */
+  text-align: left;
+  opacity: 0;
+  transform: translateY(2px) scale(.95);
+  transition: opacity .18s ease, transform .22s ease;
+}
+.prompt-like .like-count.is-visible{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  min-width: 1.2ch; /* reserve space only when shown */
+  margin-left: .25rem; /* add spacing only when shown */
+}
+/* Larger footprint when a count is present */
+.prompt-card__actions .prompt-like.has-count{
+  min-width: 64px;
+  padding: 0 12px;
+  gap: .35rem; /* add spacing between icon and count */
+}
+.prompt-card__actions .prompt-like:hover{ background: #222; }
+.prompt-card__actions .prompt-like.is-liked{
+  background: #e11d48; /* rose-600 */
+  border-color: #e11d48;
+  color: #fff;
+}
+.prompt-title{ margin:0;font-size:1.05rem;letter-spacing:-.01em; }
+.prompt-card .prompt-title a { color: #ffffff; font-weight: 600; }
+/* Feed titles: remove hover fade/underline effect */
+#panel-feed .prompt-title a:hover{
+  opacity: 1;
+  text-decoration: none;
+}
+.prompt-meta{ color:var(--muted);margin:0;font-size:.95rem; }
+.prompt-card .prompt-meta { color: #aaaaaa; font-size: 0.95rem; }
+/* Make author names clickable and obvious */
+/* Underline author links in both Feed and Explorer */
+.prompt-meta a.author-link{ color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.prompt-card .prompt-meta a.author-link{ color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+/* Remove invalid base color; keep scoped readable text */
+.prompt-card .prompt-text {
+  color: #dddddd;
+  font-size: .95rem;
+  line-height: 1.45;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: .6rem .75rem;
+  white-space: pre-wrap;
+  margin-top: .5rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  /* Ensure the text bubble never stretches; always fit content */
+  align-self: start;
+  justify-self: start;          /* don’t stretch across the grid column */
+  display: inline-block;        /* shrink-to-fit width based on content */
+  width: fit-content;           /* size to longest line of text */
+  max-width: min(100%, 70ch);   /* wrap if very long, otherwise hug text */
+  height: auto;
+  min-height: 0;
+  max-height: none;
+}
+
+/* Toggle button under meta in cards (Saved Prompts) */
+.prompt-card__toggle{ display: flex; align-items: center; gap: .5rem; margin: .25rem 0; }
+.prompt-card .prompt-toggle{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .35rem .75rem;
+  border-radius: var(--radius-round);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.prompt-card .prompt-toggle:hover{ background: #222; }
+
+/* Actions inside browse prompt cards */
+.prompt-card__actions{
+  display:flex;justify-content:flex-start;gap:.5rem;margin-top:var(--space-3);
+}
+
+.prompt-grid{
+  padding:0;margin:0;list-style:none;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);
+}
+.prompt-grid__item{min-width:0}
+.prompt-thumb{
+  display:grid;border:1px solid var(--border);border-radius:var(--radius-2);overflow:hidden;
+  background:#fff;box-shadow:var(--shadow-1);transition:transform .2s ease, box-shadow .2s ease;
+}
+.prompt-thumb:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.prompt-thumb img{aspect-ratio:1/1;object-fit:cover;background:var(--surface-2)}
+.thumb-caption{
+  padding:.7rem .9rem;font-weight:600;border-top:1px solid var(--border);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Explorer: compact preview grid built from Feed */
+#panel-explorer .prompt-grid.is-compact{
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-3);
+}
+#panel-explorer .prompt-grid.is-compact .prompt-thumb{
+  border-radius: var(--radius-2);
+  cursor: default; /* not clickable in explorer */
+}
+#panel-explorer .prompt-grid.is-compact .prompt-thumb img{
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  display: block;
+}
+#panel-explorer .prompt-grid.is-compact .prompt-thumb:hover,
+#panel-explorer .prompt-grid.is-compact .prompt-thumb:focus{
+  opacity: 1;
+}
+#panel-explorer .prompt-grid.is-compact .thumb-caption{ display:none; }
+#panel-explorer .prompt-grid.is-compact .prompt-meta{
+  margin: .5rem 0 0;
+  font-size: .85rem;
+}
+#panel-explorer .prompt-grid.is-compact .prompt-title{
+  margin: .25rem 0 0;
+  font-size: .95rem;
+  font-weight: 600;
+}
+
+/* ============ CTA ============ */
+.cta{
+  padding:var(--space-8) 0;
+  background: var(--bg);
+  text-align:center;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.cta h2{font-size:var(--fs-h2);margin:0 0 var(--space-2)}
+.cta p{color:var(--muted);margin:0 0 var(--space-4)}
+
+/* ============ Footer ============ */
+.site-footer{
+  padding:var(--space-7) 0;color:var(--muted);font-size:.95rem;
+}
+.footer-links{ display:flex;gap:var(--space-5);list-style:none;padding:0;margin:var(--space-3) 0 0; }
+
+/* ===== Modal (anchor-target, no JS) ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 10000; /* instead of 1000 */
+}
+.modal:target { display: block; }
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+}
+.modal__dialog {
+  position: relative;
+  max-width: 720px;
+  width: min(720px, 92vw);
+  margin: 8vh auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-2);
+  padding: var(--space-6);
+}
+.modal__header{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: var(--space-4);
+}
+.modal__header h2{ margin:0; font-size: var(--fs-h2); }
+
+/* Align signup header so Log in sits next to title */
+#signup .modal__header{ justify-content:flex-start; gap: var(--space-3); }
+#signup .modal__close{ margin-left:auto; }
+.modal__close{
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  font-size: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-round);
+  text-decoration: none;
+  cursor: pointer;
+}
+.modal__close:hover{ background: #222; }
+
+.modal__form label{ display:block; font-weight:600; margin-bottom: var(--space-3); }
+.modal__form input,
+.modal__form select,
+.modal__form textarea{
+  width:100%;
+  margin-top: var(--space-2);
+  padding: .75rem .9rem;
+  border-radius: var(--radius-1);
+  border:1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+  resize: none;
+}
+.modal__form input:focus,
+.modal__form select:focus,
+.modal__form textarea:focus{ border-color:#666; }
+.modal__actions{
+  display:flex; gap: var(--space-3); justify-content:flex-end;
+  margin-top: var(--space-5);
+}
+
+.site {
+  position: relative;
+  z-index: 1;
+}
+
+/* Blur page behind open modals */
+#submit:target ~ .site,
+#signup:target ~ .site{
+  filter: blur(8px);
+  transform: translateZ(0);
+}
+
+/* Lock page scroll while a modal is open */
+body:has(#submit:target),
+body:has(#signup:target){
+  overflow: hidden;
+}
+
+/* === Inline field error state === */
+.input-error input,
+.input-error select,
+.input-error textarea {
+  outline: none;
+  border-color: #e6a5a5 !important;
+  background-color: #fff6f6;
+  box-shadow: 0 0 0 2px rgba(230,165,165,0.25);
+  transition: border-color .2s, background-color .2s;
+}
+.field-error {
+  display: block;
+  margin-top: .35rem;
+  font-size: .9em;
+  color: #c65d5d;
+  font-weight: 500;
+}
+
+/* === Toast (bottom pop-up) === */
+.toast{
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: .75rem;
+  padding: .85rem 1.2rem;
+  background: linear-gradient(135deg, #2b2b2b, #1a1a1a);
+  color: var(--text);
+  border-radius: 999px;
+  box-shadow: 0 .4rem 1.2rem rgba(0,0,0,.4);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: .95rem; line-height: 1.4;
+  animation: toast-in .25s ease-out;
+  z-index: 99999;
+  /* Make toast fit within viewport and allow wrapping */
+  max-width: min(92vw, 720px);
+  width: max-content;
+  flex-wrap: wrap;
+  row-gap: .5rem;
+  box-sizing: border-box;
+}
+.toast strong{ font-weight: 600; color: #ff7676; }
+.toast__msg { flex: 1; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+.toast__action{
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-size: .85rem;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+.toast__action:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+.toast__close{ border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: #aaa; padding: 0 .3rem; transition: color .2s; }
+.toast__close:hover { color: #fff; }
+
+.tray-btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 6px 14px rgba(0,0,0,.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+/* ============ Utilities ============ */
+[hidden]{display:none!important}
+@keyframes heroGradient{
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+@keyframes toast-in{
+  from { transform: translate(-50%, 10px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+.shake{ animation: shake .35s; }
+
+/* ============ Responsive ============ */
+@media (max-width: 960px){
+  .card-grid{grid-template-columns:repeat(2,1fr)}
+  .prompt-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion: reduce){
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+@media (max-width: 640px){
+  .input-row{ grid-template-columns: 1fr; }
+  .nav{gap:var(--space-4)}
+  .nav-links{display:none} /* add a burger later if needed */
+  .tile-row { padding: var(--space-3) 3rem; }
+  .tile-figure { border-radius: 22px; aspect-ratio: 10 / 16; }
+  .tray-btn { width: 36px; height: 36px; }
+  .card-grid, .prompt-grid{grid-template-columns:1fr}
+  .card-figure img { aspect-ratio: 3 / 2; }
+  .hero{padding:3rem 0 var(--space-7)}
+  .browse-header{align-items:flex-start}
+  .modal__dialog{ margin: 4vh auto; padding: var(--space-5); }
+}
+
+.modal__titlebar{display:flex; align-items:center; gap: var(--space-3);}
+
+.modal__titlebar{display:flex; align-items:center; gap: .6rem;} .modal-or{ color: var(--muted); font-size: .95rem; }
